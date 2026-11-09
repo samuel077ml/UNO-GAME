@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta
+      name="description"
+      content="UNO — juego de cartas clasico hecho en HTML, CSS y JavaScript puro. Jugas vs 3 bots."
+    />
+    <title>UNO — Partida contra la IA</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bowlby+One&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="theme-dark" data-phase="intro">
+    <!-- Todo el contenido va aca. Lo agregamos en este step y los siguientes. -->
+    <!-- ============ INTRO / SPLASH ============ -->
+    <section class="intro" id="intro" aria-labelledby="intro-title" aria-live="polite">
+      <div class="intro__inner">
+        <div class="intro__logo" aria-hidden="true">
+          <span class="intro__logo-card intro__logo-card--red">U</span>
+          <span class="intro__logo-card intro__logo-card--yellow">N</span>
+          <span class="intro__logo-card intro__logo-card--green">O</span>
+          <span class="intro__logo-card intro__logo-card--blue">!</span>
+        </div>
+        <h1 id="intro-title" class="intro__title">UNO</h1>
+        <p class="intro__subtitle">Vos contra tres bots. Jugada por jugada. Sin trampas.</p>
+
+        <ul class="intro__features" role="list">
+          <li><span aria-hidden="true">4</span> jugadores en la mesa</li>
+          <li><span aria-hidden="true">104</span> cartas en el mazo</li>
+          <li><span aria-hidden="true">0</span> dependencias externas</li>
+        </ul>
+
+        <div class="intro__actions">
+          <button type="button" class="btn btn--primary" id="start-button" aria-label="Empezar partida">
+            <span>Empezar partida</span>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+              <path
+                d="M5 12h14M13 5l7 7-7 7"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <button type="button" class="btn btn--ghost" id="help-button-intro" aria-label="Ver como se juega">
+            Como se juega
+          </button>
+        </div>
+
+        <p class="intro__hint">Consejo: usa las flechas y Enter para jugar con teclado.</p>
+      </div>
+    </section>
+
+    <!-- ============ TOPBAR ============ -->
+    <header class="topbar" role="banner">
+      <div class="topbar__brand">
+        <span class="topbar__logo" aria-hidden="true">
+          <span class="topbar__logo-card topbar__logo-card--red"></span>
+          <span class="topbar__logo-card topbar__logo-card--yellow"></span>
+          <span class="topbar__logo-card topbar__logo-card--green"></span>
+          <span class="topbar__logo-card topbar__logo-card--blue"></span>
+        </span>
+        <span class="topbar__title">UNO</span>
+      </div>
+
+      <nav class="topbar__nav" aria-label="Acciones del juego">
+        <button type="button" class="icon-btn" id="help-button" aria-label="Ayuda y reglas">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" fill="none" />
+            <path
+              d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"
+              stroke="currentColor"
+              stroke-width="1.8"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <circle cx="12" cy="17" r="1" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button type="button" class="icon-btn" id="theme-button" aria-label="Cambiar tema">
+          <svg class="icon-btn__moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <path d="M20 14.5A8 8 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" fill="currentColor" />
+          </svg>
+          <svg class="icon-btn__sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="4" fill="currentColor" />
+            <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M12 3v2" />
+              <path d="M12 19v2" />
+              <path d="M3 12h2" />
+              <path d="M19 12h2" />
+              <path d="M5.6 5.6 7 7" />
+              <path d="M17 17l1.4 1.4" />
+              <path d="M5.6 18.4 7 17" />
+              <path d="M17 7l1.4-1.4" />
+            </g>
+          </svg>
+        </button>
+
+        <button type="button" class="btn btn--ghost btn--sm" id="new-game-button">Nueva partida</button>
+      </nav>
+    </header>
+
+    <!-- ============ MESA / MAIN ============ -->
+    <main class="table" id="table" aria-label="Mesa de juego">
+      <!-- Opponents: top, left, right -->
+      <section class="opponent opponent--top" id="opponent-top" aria-label="Oponente arriba">
+        <div class="opponent__head">
+          <div class="opponent__avatar" aria-hidden="true">
+            <span class="opponent__emoji">A</span>
+          </div>
+          <div class="opponent__meta">
+            <span class="opponent__name">IA Azul</span>
+            <span class="opponent__count" data-count>7 cartas</span>
+          </div>
+          <div class="opponent__uno-badge" aria-hidden="true">UNO</div>
+        </div>
+        <ul class="opponent__hand opponent__hand--horizontal" data-hand aria-hidden="true"></ul>
+      </section>
+
+      <section class="opponent opponent--left" id="opponent-left" aria-label="Oponente izquierda">
+        <div class="opponent__head">
+          <div class="opponent__avatar opponent__avatar--green" aria-hidden="true">
+            <span class="opponent__emoji">V</span>
+          </div>
+          <div class="opponent__meta">
+            <span class="opponent__name">IA Verde</span>
+            <span class="opponent__count" data-count>7 cartas</span>
+          </div>
+          <div class="opponent__uno-badge" aria-hidden="true">UNO</div>
+        </div>
+        <ul class="opponent__hand opponent__hand--vertical" data-hand aria-hidden="true"></ul>
+      </section>
+
+      <section class="opponent opponent--right" id="opponent-right" aria-label="Oponente derecha">
+        <div class="opponent__head">
+          <div class="opponent__avatar opponent__avatar--red" aria-hidden="true">
+            <span class="opponent__emoji">R</span>
+          </div>
+          <div class="opponent__meta">
+            <span class="opponent__name">IA Rojo</span>
+            <span class="opponent__count" data-count>7 cartas</span>
+          </div>
+          <div class="opponent__uno-badge" aria-hidden="true">UNO</div>
+        </div>
+        <ul class="opponent__hand opponent__hand--vertical" data-hand aria-hidden="true"></ul>
+      </section>
+
+        <!-- Center: piles + indicators -->
+        <section class="center" aria-label="Centro de la mesa">
+          <div class="center__status" aria-live="polite">
+            <span class="center__turn" id="turn-label">Tu turno</span>
+            <span class="center__direction" id="direction-indicator" aria-label="Dirección de juego">&#x21bb;</span>
+          </div>
+
+          <div class="piles">
+            <button type="button" class="pile pile--draw" id="draw-pile" aria-label="Robar una carta">
+              <span class="pile__count" data-draw-count>0</span>
+              <span class="card card--back pile__top-card" aria-hidden="true">
+                <span class="card__back-logo">UNO</span>
+              </span>
+              <span class="card card--back pile__top-card pile__top-card--offset" aria-hidden="true">
+                <span class="card__back-logo">UNO</span>
+              </span>
+              <span class="pile__label">Mazo</span>
+            </button>
+
+            <div class="pile pile--discard" id="discard-pile" aria-label="Pila de descarte" data-color="red">
+              <span class="pile__color-ring" aria-hidden="true"></span>
+              <!-- discard card injected via JS -->
+              <span class="pile__label">Descarte</span>
+            </div>
+          </div>
+
+          <div class="center__log" id="event-log" aria-live="polite" aria-atomic="false">
+            <p class="center__log-item">Empieza la partida. Buena suerte!</p>
+          </div>
+        </section>
+        <!-- Player area -->
+        <section class="player" id="player" aria-label="Tus cartas">
+          <div class="player__head">
+            <div class="player__avatar" aria-hidden="true">
+              <span class="player__emoji">T</span>
+            </div>
+            <div class="player__meta">
+              <span class="player__name">Vos</span>
+              <span class="player__count" data-count>7 cartas</span>
+            </div>
+            <div class="player__uno-badge" aria-hidden="true">UNO</div>
+          </div>
+          <ul
+            class="player__hand"
+            id="player-hand"
+            tabindex="0"
+            data-hand
+            role="listbox"
+            aria-label="Tu mano. Usa flechas para moverte y Enter para jugar."
+          ></ul>
+          <div class="player__actions">
+            <button type="button" class="btn btn--ghost btn--sm" id="say-uno-button" aria-label="Decir UNO">
+              ¡UNO!
+            </button>
+            <button type="button" class="btn btn--secondary btn--sm" id="pass-button" aria-label="Robar una carta">
+              Robar carta
+            </button>
+          </div>
+        </section>
+    </main>
+
+    <!-- ============ TOAST / ANUNCIOS ============ -->
+    <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+    <!-- ============ WILD FLASH (cuando se juega un Comodin) ============ -->
+    <div class="wild-flash" id="wild-flash" aria-hidden="true">
+      <div class="wild-flash__inner">
+        <span class="wild-flash__label">Nuevo color</span>
+        <span class="wild-flash__swatch" data-wild-swatch></span>
+        <span class="wild-flash__name" data-wild-name>Rojo</span>
+      </div>
+    </div>
+
+    <!-- ============ MODAL DE VICTORIA / DERROTA ============ -->
+    <div class="modal" id="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
+      <div class="modal__backdrop" data-close-modal></div>
+      <div class="modal__panel modal__panel--result">
+        <canvas class="confetti" id="confetti-canvas" aria-hidden="true"></canvas>
+        <h2 class="modal__title" id="result-title">¡Ganaste!</h2>
+        <p class="modal__subtitle" id="result-subtitle">Dejaste sin cartas a toda la mesa.</p>
+
+        <dl class="stats">
+          <div class="stats__item">
+            <dt>Turnos jugados</dt>
+            <dd data-stat="turns">0</dd>
+          </div>
+          <div class="stats__item">
+            <dt>Cartas jugadas</dt>
+            <dd data-stat="played">0</dd>
+          </div>
+          <div class="stats__item">
+            <dt>Especiales usados</dt>
+            <dd data-stat="specials">0</dd>
+          </div>
+          <div class="stats__item">
+            <dt>Cartas robadas</dt>
+            <dd data-stat="drawn">0</dd>
+          </div>
+        </dl>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--primary" id="play-again-button">Jugar de nuevo</button>
+          <button type="button" class="btn btn--ghost" data-close-modal>Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL DE AYUDA ============ -->
+    <div class="modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
+      <div class="modal__backdrop" data-close-modal></div>
+      <div class="modal__panel modal__panel--help">
+        <header class="modal__header">
+          <h2 class="modal__title" id="help-title">Reglas rapidas</h2>
+          <button type="button" class="icon-btn icon-btn--inline" data-close-modal aria-label="Cerrar ayuda">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </header>
+
+        <div class="help-grid">
+          <article class="help-card">
+            <h3>Objetivo</h3>
+            <p>Ser el primero en quedarte sin cartas en la mano.</p>
+          </article>
+          <article class="help-card">
+            <h3>Como jugar</h3>
+            <p>Podés tirar una carta que coincida en <strong>color</strong> o en <strong>número/símbolo</strong> con la carta de descarte. Si no tenés, robás una.</p>
+          </article>
+          <article class="help-card">
+            <h3>Cartas especiales</h3>
+            <ul>
+              <li><strong>Salto:</strong> el siguiente pierde el turno.</li>
+              <li><strong>Reversa:</strong> se invierte la dirección.</li>
+              <li><strong>+2:</strong> el siguiente roba 2 y pierde el turno.</li>
+              <li><strong>Comodín:</strong> juega sobre cualquier cosa y elige un color al azar.</li>
+            </ul>
+          </article>
+          <article class="help-card">
+            <h3>¡UNO!</h3>
+            <p>Cuando te queda <strong>1 carta</strong>, aparece el cartel de UNO sobre tu avatar.</p>
+          </article>
+          <article class="help-card">
+            <h3>Atajos de teclado</h3>
+            <ul>
+              <li><kbd>←</kbd> <kbd>→</kbd> moverte entre tus cartas</li>
+              <li><kbd>Enter</kbd> jugar la carta seleccionada</li>
+              <li><kbd>D</kbd> robar una carta</li>
+              <li><kbd>N</kbd> nueva partida</li>
+            </ul>
+          </article>
+          <article class="help-card">
+            <h3>Lo que NO hay</h3>
+            <p>Sin +4, sin acumular +2, sin elegir color en el comodín (es al azar). Version simplificada pero honesta.</p>
+          </article>
+        </div>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--primary" data-close-modal>Entendido</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen-reader live region for key events -->
+    <div class="sr-only" aria-live="assertive" id="sr-live"></div>
+
+    <footer class="footer">
+      <small>Hecho en HTML + CSS + JavaScript puro para tu portfolio &middot; GameCode</small>
+    </footer>
+
+
+    <script src="script.js"></script>
+  </body>
+</html>
